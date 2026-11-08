@@ -3,6 +3,7 @@
 > Gilbertus Nico is a Project Manager at PT Bank Danamon Indonesia, Tbk. with over six years of project management experience, specializing in loan system projects — mortgages, credit card onboarding and P2P lending — with strengths in communication, budget and timeline management, and a record of delivering projects on time and within scope.
 
 - Website: https://gilbertusnico.vercel.app/
+- LinkedIn: https://www.linkedin.com/in/gilbertusnico/
 - Current role: Project Manager, PT Bank Danamon Indonesia, Tbk. (January 2023 – present)
 - Industry focus: banking, fintech, lending
 - Education: Bachelor of Science in Information Technology, President University (2011–2015)
@@ -28,3 +29,4 @@
 ## Pages
 
 - [Full CV](https://gilbertusnico.vercel.app/): profile, career record, education and contact details
+- [LinkedIn profile](https://www.linkedin.com/in/gilbertusnico/): professional profile and network
