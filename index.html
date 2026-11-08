@@ -20,6 +20,12 @@
           document.documentElement.setAttribute('data-theme', 'dark');
         }
       } catch (e) {}
+      // Motion-enhanced mode: hide choreographed elements until Motion animates them.
+      // If the library fails to load, the class is removed and everything shows.
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('m');
+        setTimeout(function () { if (!window.Motion) document.documentElement.classList.remove('m'); }, 3000);
+      }
     })();
   </script>
 
@@ -172,6 +178,7 @@
       display: grid;
       grid-template-rows: 1fr auto;
       padding-top: 64px;
+      overflow-x: clip;
     }
     .hero-main {
       display: grid;
@@ -238,7 +245,8 @@
       background: var(--ink); color: var(--bg);
       font-weight: 500; font-size: 15px;
       white-space: nowrap;
-      transition: background-color .3s ease, transform .4s var(--ease);
+      transition: background-color .3s ease;
+      will-change: transform;
     }
     .btn svg { transition: transform .4s var(--ease); }
     .btn:hover { background: var(--accent); }
@@ -467,6 +475,41 @@
     }
     .rule-draw.in::after { transform: scaleX(1); }
 
+    /* ---------- Motion (motion.dev) ---------- */
+    .ch, .wi { display: inline-block; will-change: transform; }
+    .wm { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+    .m .fade-in { animation: none; opacity: 0; transform: none; }
+    .m .hero h1 .line > span { animation: none; transform: none; }
+    .m .hero h1 .ch { transform: translateY(110%); }
+    .m .wi { transform: translateY(110%); }
+    .m .rv { transition: none; }
+    .m .skill, .m .tag,
+    .m .entry .period, .m .entry h3, .m .entry .org, .m .entry .area, .m .entry li { opacity: 0; }
+    .hero h1 .line { will-change: transform; }
+
+    /* Career rail beside the ledger */
+    .ledger { position: relative; }
+    .rail {
+      position: absolute; top: 0; bottom: 0;
+      left: calc(var(--gutter) * -0.5);
+      width: 1px; background: var(--rule);
+    }
+    .rail i {
+      position: absolute; inset: 0;
+      background: var(--accent);
+      transform-origin: top; transform: scaleY(0);
+    }
+    .rail b {
+      position: absolute; left: -3px; top: 0;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+      transform: translateY(-50%);
+    }
+
+    /* Theme switch: circular reveal (View Transitions) */
+    ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
     /* ---------- Responsive ---------- */
     @media (max-width: 1024px) {
       .hero-role { grid-column: 1 / span 5; }
@@ -477,6 +520,7 @@
     }
     @media (max-width: 860px) {
       .bar nav { display: none; }
+      .rail { display: none; }
       .strip { grid-template-columns: repeat(2, 1fr); }
       .strip > div:nth-child(2) { border-right: 0; margin-right: 0; }
       .strip > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
@@ -552,7 +596,7 @@
           Skilled in communication, budget and timeline management — delivering projects on time and within scope, from mortgage platforms to credit card onboarding and P2P lending.
         </p>
         <div class="hero-cta fade-in" style="--d:.85s">
-          <a href="#contact" class="btn">Get in touch
+          <a href="#contact" class="btn magnetic">Get in touch
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg>
           </a>
         </div>
@@ -572,7 +616,7 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="sec-num mono rv">01 — Profile</span>
-        <h2 class="sec-title rv" style="--d:80ms">Execution, <em>with the people</em> who make it happen.</h2>
+        <h2 class="sec-title">Execution, <em>with the people</em> who make it happen.</h2>
       </div>
 
       <div class="profile">
@@ -585,7 +629,7 @@
           With over six years of experience in project management, I specialize in overseeing complex loan system projects — including mortgages, credit card onboarding, and P2P lending at <em>PT Bank Danamon Indonesia</em>. My core competencies include project planning, issue resolution, and delivering results within tight deadlines. Committed to fostering teamwork and operational excellence, I align innovative solutions with organizational goals to drive impactful outcomes.
         </p>
 
-        <div class="skills rule-draw rv">
+        <div class="skills rule-draw">
           <div class="skill">
             <span class="mono">A</span>
             <div>
@@ -616,7 +660,7 @@
           </div>
         </div>
 
-        <div class="tags rv">
+        <div class="tags">
           <span class="tag">Agile / Scrum</span>
           <span class="tag">Issue resolution</span>
           <span class="tag">Timeline management</span>
@@ -632,14 +676,16 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="sec-num mono rv">02 — Record</span>
-        <h2 class="sec-title rv" style="--d:80ms">Eleven years, <em>three companies,</em> one through-line.</h2>
+        <h2 class="sec-title">Eleven years, <em>three companies,</em> one through-line.</h2>
       </div>
 
-      <div class="ledger-head mono rv">
+      <div class="ledger" id="ledger">
+        <div class="rail" aria-hidden="true"><i></i><b></b></div>
+        <div class="ledger-head mono rv">
         <span>Period</span><span>Role</span><span>Scope</span><span>No.</span>
       </div>
 
-      <article class="entry rv">
+      <article class="entry">
         <div class="period mono"><b class="now">Jan 2023 — Present</b>Current</div>
         <div>
           <h3>Project Manager</h3>
@@ -659,7 +705,7 @@
 
       <div class="group-label mono rv">LOGIQUE (PT. Logika Sarana Teknologi) · 2017 — 2022</div>
 
-      <article class="entry rv">
+      <article class="entry">
         <div class="period mono"><b>Jun 2021 — Dec 2022</b>1 yr 7 mo</div>
         <div>
           <h3>Vice Lead of Project Manager</h3>
@@ -678,7 +724,7 @@
         <span class="idx mono">04</span>
       </article>
 
-      <article class="entry rv">
+      <article class="entry">
         <div class="period mono"><b>Jan 2020 — Jun 2021</b>1 yr 6 mo</div>
         <div>
           <h3>Senior Project Manager</h3>
@@ -694,7 +740,7 @@
         <span class="idx mono">03</span>
       </article>
 
-      <article class="entry rv">
+      <article class="entry">
         <div class="period mono"><b>Sep 2017 — Dec 2019</b>2 yr 4 mo</div>
         <div>
           <h3>Project Leader</h3>
@@ -714,7 +760,7 @@
 
       <div class="group-label mono rv">Where it started</div>
 
-      <article class="entry rv">
+      <article class="entry">
         <div class="period mono"><b>Apr 2015 — Sep 2017</b>2 yr 6 mo</div>
         <div>
           <h3>Frontend Developer</h3>
@@ -728,6 +774,7 @@
         </div>
         <span class="idx mono">01</span>
       </article>
+      </div>
     </div>
   </section>
 
@@ -736,7 +783,7 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="sec-num mono rv">03 — Education</span>
-        <h2 class="sec-title rv" style="--d:80ms">Trained in <em>technology</em> first.</h2>
+        <h2 class="sec-title">Trained in <em>technology</em> first.</h2>
       </div>
       <div class="edu rv">
         <span class="period mono">Oct 2011 — Jun 2015</span>
@@ -750,7 +797,7 @@
   <section class="contact" id="contact">
     <div class="wrap">
       <span class="sec-num mono rv">04 — Contact</span>
-      <p class="contact-line rv" style="--d:80ms">Let's discuss your <em>next project.</em></p>
+      <p class="contact-line">Let's discuss your <em>next project.</em></p>
 
       <a class="mailto rv" style="--d:160ms" href="mailto:nicoanjaru@gmail.com">nicoanjaru@gmail.com<span class="arrow" aria-hidden="true">↗</span></a>
 
@@ -767,25 +814,45 @@
     </footer>
   </section>
 
+  <!-- Motion (motion.dev) — vanilla JS build -->
+  <script src="https://cdn.jsdelivr.net/npm/motion@14.6.0/dist/motion.js"></script>
   <script>
     (function () {
       var root = document.documentElement;
       var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // Theme toggle
-      document.getElementById('theme-toggle').addEventListener('click', function () {
+      var toggleBtn = document.getElementById('theme-toggle');
+      toggleBtn.addEventListener('click', function () {
         var dark = root.getAttribute('data-theme') === 'dark';
-        if (dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', 'dark');
-        try { localStorage.setItem('theme', dark ? 'light' : 'dark'); } catch (e) {}
+        function flip() {
+          if (dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', 'dark');
+          try { localStorage.setItem('theme', dark ? 'light' : 'dark'); } catch (e) {}
+        }
+        if (!document.startViewTransition || reduce) { flip(); return; }
+        // Ink-spill reveal: new theme grows as a circle from the toggle
+        var r = toggleBtn.getBoundingClientRect();
+        var x = r.left + r.width / 2, y = r.top + r.height / 2;
+        var end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        document.startViewTransition(flip).ready.then(function () {
+          root.animate(
+            { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + end + 'px at ' + x + 'px ' + y + 'px)'] },
+            { duration: 700, easing: 'cubic-bezier(0.77, 0, 0.175, 1)', pseudoElement: '::view-transition-new(root)' }
+          );
+        });
       });
 
-      // Reveal on scroll
+      var M = window.Motion;
+      if (!M || reduce) root.classList.remove('m');
+      var motionOn = root.classList.contains('m');
+
+      // Reveal on scroll (plain fallback; Motion takes over .rv when available)
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-      document.querySelectorAll('.rv, .rule-draw').forEach(function (el) { io.observe(el); });
+      document.querySelectorAll(motionOn ? '.rule-draw' : '.rv, .rule-draw').forEach(function (el) { io.observe(el); });
 
       // Split profile lead into words for scroll-linked reading reveal
       var lead = document.getElementById('lead');
@@ -836,7 +903,151 @@
       }, { passive: true });
       window.addEventListener('resize', onScroll);
       onScroll();
+
+      if (motionOn) choreograph(M);
     })();
+
+    /* =========================================================
+       Motion choreography (motion.dev)
+       One easing family, one rhythm: things arrive fast and settle slow.
+       ========================================================= */
+    function choreograph(M) {
+      var animate = M.animate, scroll = M.scroll, inView = M.inView, stagger = M.stagger;
+      var EASE = [0.16, 1, 0.3, 1];
+      var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      // Split text nodes into masked words (.wm > .wi) or characters (.ch), keeping <em> etc.
+      function split(el, mode) {
+        var out = [];
+        (function walk(node) {
+          Array.prototype.slice.call(node.childNodes).forEach(function (c) {
+            if (c.nodeType === 1) { walk(c); return; }
+            if (c.nodeType !== 3) return;
+            var frag = document.createDocumentFragment();
+            c.textContent.split(/(\s+)/).forEach(function (part) {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+              if (mode === 'chars') {
+                part.split('').forEach(function (ch) {
+                  var s = document.createElement('span'); s.className = 'ch'; s.textContent = ch;
+                  out.push(s); frag.appendChild(s);
+                });
+              } else {
+                var m = document.createElement('span'); m.className = 'wm';
+                var i = document.createElement('span'); i.className = 'wi'; i.textContent = part;
+                m.appendChild(i); out.push(i); frag.appendChild(m);
+              }
+            });
+            node.replaceChild(frag, c);
+          });
+        })(el);
+        return out;
+      }
+
+      /* 1 — Hero entrance: name rises letter by letter, then the supporting copy */
+      var nameChars = [];
+      document.querySelectorAll('.hero h1 .line > span').forEach(function (l) {
+        nameChars = nameChars.concat(split(l, 'chars'));
+      });
+      animate(nameChars, { y: ['110%', '0%'], rotate: [6, 0] },
+        { duration: 1.2, ease: EASE, delay: stagger(0.035, { startDelay: 0.15 }) });
+      animate('.hero .fade-in', { opacity: [0, 1], y: [18, 0] },
+        { duration: 1, ease: EASE, delay: stagger(0.09, { startDelay: 0.75 }) });
+
+      /* 2 — Hero exit: the two name lines drift apart as you scroll away */
+      var hero = document.querySelector('.hero');
+      var lines = hero.querySelectorAll('h1 .line');
+      var heroSub = hero.querySelector('.hero-sub');
+      scroll(function (p) {
+        lines[0].style.transform = 'translateX(' + (-p * 9) + 'vw)';
+        lines[1].style.transform = 'translateX(' + (p * 6) + 'vw)';
+        heroSub.style.opacity = String(Math.max(0, 1 - p * 1.6));
+      }, { target: hero, offset: ['start start', 'end start'] });
+
+      /* 3 — Section titles: words rise out of a mask */
+      document.querySelectorAll('.sec-title, .contact-line').forEach(function (t) {
+        var words = split(t, 'words');
+        inView(t, function () {
+          animate(words, { y: ['110%', '0%'] }, { duration: 1.1, ease: EASE, delay: stagger(0.06) });
+        }, { amount: 0.4 });
+      });
+
+      /* 4 — Generic blocks */
+      document.querySelectorAll('.rv').forEach(function (el) {
+        var d = parseFloat(getComputedStyle(el).getPropertyValue('--d')) || 0;
+        inView(el, function () {
+          animate(el, { opacity: [0, 1], y: [24, 0] }, { duration: 0.9, ease: EASE, delay: d / 1000 });
+        }, { margin: '0px 0px -40px 0px' });
+      });
+
+      /* 5 — The "6+" counts up once */
+      var years = document.getElementById('years');
+      inView(years, function () {
+        animate(0, 6, { duration: 1.8, ease: EASE, onUpdate: function (v) { years.textContent = Math.round(v); } });
+        animate('.profile-aside sup', { opacity: [0, 1], scale: [0.4, 1] }, { type: 'spring', stiffness: 260, damping: 14, delay: 1.1 });
+      });
+
+      /* 6 — Competencies and tags arrive in sequence */
+      inView('.skills', function (el) {
+        animate(el.querySelectorAll('.skill'), { opacity: [0, 1], y: [20, 0] },
+          { duration: 0.9, ease: EASE, delay: stagger(0.1, { startDelay: 0.2 }) });
+      }, { amount: 0.2 });
+      inView('.tags', function (el) {
+        animate(el.querySelectorAll('.tag'), { opacity: [0, 1], scale: [0.85, 1] },
+          { type: 'spring', stiffness: 380, damping: 22, delay: stagger(0.05) });
+      });
+
+      /* 7 — Ledger entries: each row writes itself in, left to right */
+      document.querySelectorAll('.entry').forEach(function (entry) {
+        inView(entry, function () {
+          var heads = entry.querySelectorAll('.period, h3, .org, .area');
+          animate(heads, { opacity: [0, 1], y: [18, 0] }, { duration: 0.8, ease: EASE, delay: stagger(0.07) });
+          animate(entry.querySelectorAll('li'), { opacity: [0, 1], x: [-12, 0] },
+            { duration: 0.7, ease: EASE, delay: stagger(0.06, { startDelay: 0.3 }) });
+        }, { amount: 0.25 });
+      });
+
+      /* 8 — Career rail fills as you read through the record */
+      var ledger = document.getElementById('ledger');
+      var railFill = ledger.querySelector('.rail i');
+      var railDot = ledger.querySelector('.rail b');
+      scroll(function (p) {
+        railFill.style.transform = 'scaleY(' + p + ')';
+        railDot.style.top = (p * 100) + '%';
+      }, { target: ledger, offset: ['start 70%', 'end 70%'] });
+
+      /* 9 — Email: letters ripple on hover */
+      var mailto = document.querySelector('.mailto');
+      var mailChars = [];
+      Array.prototype.slice.call(mailto.childNodes).forEach(function (c) {
+        if (c.nodeType !== 3) return;
+        var wrap = document.createElement('span');
+        wrap.textContent = c.textContent;
+        mailto.replaceChild(wrap, c);
+        mailChars = mailChars.concat(split(wrap, 'chars'));
+      });
+      if (finePointer) {
+        M.hover(mailto, function () {
+          animate(mailChars, { y: [0, -14, 0] }, { duration: 0.5, ease: 'easeInOut', delay: stagger(0.016) });
+        });
+      }
+
+      /* 10 — Magnetic CTA + tactile press */
+      if (finePointer) {
+        document.querySelectorAll('.magnetic').forEach(function (el) {
+          var spring = { type: 'spring', stiffness: 260, damping: 18, mass: 0.6 };
+          el.addEventListener('pointermove', function (e) {
+            var r = el.getBoundingClientRect();
+            animate(el, { x: (e.clientX - r.left - r.width / 2) * 0.35, y: (e.clientY - r.top - r.height / 2) * 0.35 }, spring);
+          });
+          el.addEventListener('pointerleave', function () { animate(el, { x: 0, y: 0 }, spring); });
+        });
+      }
+      M.press('.btn, .toggle', function (el) {
+        animate(el, { scale: 0.94 }, { type: 'spring', stiffness: 600, damping: 30 });
+        return function () { animate(el, { scale: 1 }, { type: 'spring', stiffness: 500, damping: 14 }); };
+      });
+    }
   </script>
 </body>
 </html>
