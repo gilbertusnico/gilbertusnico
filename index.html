@@ -128,13 +128,14 @@
       display: flex; align-items: center; justify-content: space-between;
       height: 64px; gap: 1.5rem;
     }
-    .mark {
-      font-family: var(--f-display);
-      font-size: 26px;
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
-    .mark i { color: var(--accent); font-style: normal; }
+    /* Logo: same mark as the favicon, colours follow the theme */
+    .mark { display: block; line-height: 0; border-radius: 9px; }
+    .mark svg { display: block; transition: transform .6s var(--ease); }
+    .mark-tile { fill: var(--ink); transition: fill .5s ease; }
+    .mark-g { fill: var(--bg); stroke: var(--bg); transition: fill .5s ease, stroke .5s ease; }
+    .mark-dot { fill: var(--accent); transform-origin: 45.93px 47.67px; transition: transform .6s var(--ease); }
+    .mark:hover svg { transform: rotate(-6deg); }
+    .mark:hover .mark-dot { transform: scale(1.35); }
     .bar nav { display: flex; gap: 2rem; }
     .bar nav a {
       position: relative;
@@ -383,9 +384,11 @@
       font-family: var(--f-display); font-weight: 400;
       font-size: clamp(1.8rem, 2.8vw, 2.6rem);
       line-height: 1.02; letter-spacing: -0.02em;
-      transition: transform .6s var(--ease);
     }
-    .entry:hover h3 { transform: translateX(8px); }
+    .entry .org { will-change: transform; }
+    /* Without Motion, keep the simple hover nudge */
+    html:not(.m) .entry h3 { transition: transform .6s var(--ease); }
+    html:not(.m) .entry:hover h3 { transform: translateX(8px); }
     .entry .org { color: var(--ink-2); margin-top: .6rem; font-size: 15px; }
     .entry .area { color: var(--accent); display: block; margin-bottom: .9rem; padding-top: .55rem; }
     .entry ul { list-style: none; color: var(--ink-2); font-size: 15px; }
@@ -564,7 +567,7 @@
   <!-- TOP BAR -->
   <header class="bar" id="bar">
     <div class="wrap bar-inner">
-      <a href="#top" class="mark" aria-label="Gilbertus Nico — home">G<i>.</i>N</a>
+      <a href="#top" class="mark" aria-label="Gilbertus Nico — home"><svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><rect class="mark-tile" width="64" height="64" rx="14"/><path class="mark-g" d="M27.73 51.95L27.73 51.95Q23.36 51.95 20.34 49.47Q17.31 46.98 15.75 42.48Q14.18 37.97 14.18 31.81L14.18 31.81Q14.18 25.87 16.02 21.42Q17.85 16.96 21.06 14.50Q24.28 12.05 28.44 12.05L28.44 12.05Q30.54 12.05 32.27 12.45Q34.00 12.86 35.29 13.51L35.29 13.51Q36.00 13.88 36.00 14.64L36.00 14.64L36.16 22.85Q36.16 23.77 35.51 23.77L35.51 23.77Q34.92 23.77 34.75 23.06L34.75 23.06L34.32 21.44Q33.13 16.96 31.62 15.29Q30.11 13.61 27.46 13.61L27.46 13.61Q23.52 13.61 20.96 18.28Q18.39 22.95 18.39 31.81L18.39 31.81Q18.39 40.94 21.01 45.72Q23.63 50.49 27.73 50.49L27.73 50.49Q29.95 50.49 31.08 49.52Q32.22 48.55 32.22 45.91L32.22 45.91L32.22 34.08Q32.22 32.95 31.86 32.51Q31.51 32.08 30.38 31.97L30.38 31.97L28.27 31.76Q27.57 31.70 27.57 31.11L27.57 31.11Q27.57 30.52 28.38 30.52L28.38 30.52L38.26 30.52Q39.07 30.52 39.07 31.16L39.07 31.16Q39.07 31.65 38.48 31.76L38.48 31.76L37.67 31.86Q36.48 32.03 36.27 32.51Q36.05 33.00 36.05 34.13L36.05 34.13L36.05 48.77Q36.05 49.36 35.73 49.71Q35.40 50.06 34.59 50.49L34.59 50.49Q33.30 51.14 31.62 51.55Q29.95 51.95 27.73 51.95Z" stroke-width="0.8" stroke-linejoin="round"/><circle class="mark-dot" cx="45.93" cy="47.67" r="4.29"/></svg></a>
       <nav class="mono" aria-label="Sections">
         <a href="#profile"><span>01</span>Profile</a>
         <a href="#record"><span>02</span>Record</a>
@@ -1036,7 +1039,25 @@
         });
       }
 
-      /* 10 — Magnetic CTA + tactile press */
+      /* 10 — Ledger rows: role and company drift apart with the cursor,
+         the same counter-motion as the hero name */
+      if (finePointer) {
+        var drift = { type: 'spring', stiffness: 150, damping: 20, mass: 0.8 };
+        document.querySelectorAll('.entry').forEach(function (entry) {
+          var role = entry.querySelector('h3'), org = entry.querySelector('.org');
+          entry.addEventListener('pointermove', function (e) {
+            var r = entry.getBoundingClientRect();
+            var nx = (e.clientX - r.left) / r.width - 0.5;      // -0.5 … 0.5
+            animate(role, { x: nx * 36 }, drift);                // with the cursor
+            animate(org, { x: -nx * 26 }, drift);                // against it
+          });
+          entry.addEventListener('pointerleave', function () {
+            animate([role, org], { x: 0 }, drift);
+          });
+        });
+      }
+
+      /* 11 — Magnetic CTA + tactile press */
       if (finePointer) {
         document.querySelectorAll('.magnetic').forEach(function (el) {
           var spring = { type: 'spring', stiffness: 260, damping: 18, mass: 0.6 };
