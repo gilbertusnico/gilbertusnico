@@ -383,9 +383,11 @@
       font-family: var(--f-display); font-weight: 400;
       font-size: clamp(1.8rem, 2.8vw, 2.6rem);
       line-height: 1.02; letter-spacing: -0.02em;
-      transition: transform .6s var(--ease);
     }
-    .entry:hover h3 { transform: translateX(8px); }
+    .entry .org { will-change: transform; }
+    /* Without Motion, keep the simple hover nudge */
+    html:not(.m) .entry h3 { transition: transform .6s var(--ease); }
+    html:not(.m) .entry:hover h3 { transform: translateX(8px); }
     .entry .org { color: var(--ink-2); margin-top: .6rem; font-size: 15px; }
     .entry .area { color: var(--accent); display: block; margin-bottom: .9rem; padding-top: .55rem; }
     .entry ul { list-style: none; color: var(--ink-2); font-size: 15px; }
@@ -1036,7 +1038,25 @@
         });
       }
 
-      /* 10 — Magnetic CTA + tactile press */
+      /* 10 — Ledger rows: role and company drift apart with the cursor,
+         the same counter-motion as the hero name */
+      if (finePointer) {
+        var drift = { type: 'spring', stiffness: 150, damping: 20, mass: 0.8 };
+        document.querySelectorAll('.entry').forEach(function (entry) {
+          var role = entry.querySelector('h3'), org = entry.querySelector('.org');
+          entry.addEventListener('pointermove', function (e) {
+            var r = entry.getBoundingClientRect();
+            var nx = (e.clientX - r.left) / r.width - 0.5;      // -0.5 … 0.5
+            animate(role, { x: nx * 36 }, drift);                // with the cursor
+            animate(org, { x: -nx * 26 }, drift);                // against it
+          });
+          entry.addEventListener('pointerleave', function () {
+            animate([role, org], { x: 0 }, drift);
+          });
+        });
+      }
+
+      /* 11 — Magnetic CTA + tactile press */
       if (finePointer) {
         document.querySelectorAll('.magnetic').forEach(function (el) {
           var spring = { type: 'spring', stiffness: 260, damping: 18, mass: 0.6 };
