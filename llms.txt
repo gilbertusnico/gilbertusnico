@@ -15,8 +15,8 @@
 - **Project Manager — PT Bank Danamon Indonesia, Tbk. (Jan 2023 – present).** Manages several loan system projects, including mortgage, credit card onboarding and P2P lending; adapts project plans to changing targets and operational needs; keeps projects on track and on deadline; works with teams to identify and resolve issues.
 - **Vice Lead of Project Manager — LOGIQUE (PT. Logika Sarana Teknologi) (Jun 2021 – Dec 2022).** Reported on project budgets, progress and technical issues to managers; monitored team and project performance; kept stakeholders informed with regular status updates; prepared daily, weekly and monthly tracking reports in Microsoft Excel; organized team-building activities.
 - **Senior Project Manager — LOGIQUE (Jan 2020 – Jun 2021).** Coordinated team members to set and achieve project goals and kept the team aligned on delivery.
-- **Project Leader — LOGIQUE (Sep 2017 – Dec 2019).** Managed e-commerce and microsite projects end to end; ensured timely completion against client expectations; optimized workflows and coordinated cross-functional teams.
-- **Frontend Developer — AsiaQuest Indonesia (PT. AQ Business Consulting Indonesia) (Apr 2015 – Sep 2017).** Started as a Junior Front-End Developer and was promoted to Senior Front-End Developer within two years.
+- **Senior Front-End Developer — LOGIQUE (Sep 2017 – Dec 2019).** Managed e-commerce and microsite projects end to end; ensured timely completion against client expectations; optimized workflows and coordinated cross-functional teams.
+- **Front-End Developer — AsiaQuest Indonesia (PT. AQ Business Consulting Indonesia) (Apr 2015 – Sep 2017).** Started as a Junior Front-End Developer and was promoted to Senior Front-End Developer within two years.
 
 ## Core competencies
 
