@@ -266,6 +266,9 @@
     .mark-dot { fill: var(--accent); transform-origin: 45.93px 47.67px; transition: transform .6s var(--ease); }
     .mark:hover svg { transform: rotate(-6deg); }
     .mark:hover .mark-dot { transform: scale(1.35); }
+    /* Logo intro (Motion): outline draws, fills in, then the dot drops */
+    .m .mark-g { fill-opacity: 0; stroke-opacity: 0; }
+    .m .mark-drop { opacity: 0; }
     .bar nav { display: flex; gap: 2rem; }
     .bar nav a {
       position: relative;
@@ -697,7 +700,7 @@
   <!-- TOP BAR -->
   <header class="bar" id="bar">
     <div class="wrap bar-inner">
-      <a href="#top" class="mark" aria-label="Gilbertus Nico — home"><svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><rect class="mark-tile" width="64" height="64" rx="14"/><path class="mark-g" d="M27.73 51.95L27.73 51.95Q23.36 51.95 20.34 49.47Q17.31 46.98 15.75 42.48Q14.18 37.97 14.18 31.81L14.18 31.81Q14.18 25.87 16.02 21.42Q17.85 16.96 21.06 14.50Q24.28 12.05 28.44 12.05L28.44 12.05Q30.54 12.05 32.27 12.45Q34.00 12.86 35.29 13.51L35.29 13.51Q36.00 13.88 36.00 14.64L36.00 14.64L36.16 22.85Q36.16 23.77 35.51 23.77L35.51 23.77Q34.92 23.77 34.75 23.06L34.75 23.06L34.32 21.44Q33.13 16.96 31.62 15.29Q30.11 13.61 27.46 13.61L27.46 13.61Q23.52 13.61 20.96 18.28Q18.39 22.95 18.39 31.81L18.39 31.81Q18.39 40.94 21.01 45.72Q23.63 50.49 27.73 50.49L27.73 50.49Q29.95 50.49 31.08 49.52Q32.22 48.55 32.22 45.91L32.22 45.91L32.22 34.08Q32.22 32.95 31.86 32.51Q31.51 32.08 30.38 31.97L30.38 31.97L28.27 31.76Q27.57 31.70 27.57 31.11L27.57 31.11Q27.57 30.52 28.38 30.52L28.38 30.52L38.26 30.52Q39.07 30.52 39.07 31.16L39.07 31.16Q39.07 31.65 38.48 31.76L38.48 31.76L37.67 31.86Q36.48 32.03 36.27 32.51Q36.05 33.00 36.05 34.13L36.05 34.13L36.05 48.77Q36.05 49.36 35.73 49.71Q35.40 50.06 34.59 50.49L34.59 50.49Q33.30 51.14 31.62 51.55Q29.95 51.95 27.73 51.95Z" stroke-width="0.8" stroke-linejoin="round"/><circle class="mark-dot" cx="45.93" cy="47.67" r="4.29"/></svg></a>
+      <a href="#top" class="mark" aria-label="Gilbertus Nico — home"><svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><rect class="mark-tile" width="64" height="64" rx="14"/><path class="mark-g" d="M27.73 51.95L27.73 51.95Q23.36 51.95 20.34 49.47Q17.31 46.98 15.75 42.48Q14.18 37.97 14.18 31.81L14.18 31.81Q14.18 25.87 16.02 21.42Q17.85 16.96 21.06 14.50Q24.28 12.05 28.44 12.05L28.44 12.05Q30.54 12.05 32.27 12.45Q34.00 12.86 35.29 13.51L35.29 13.51Q36.00 13.88 36.00 14.64L36.00 14.64L36.16 22.85Q36.16 23.77 35.51 23.77L35.51 23.77Q34.92 23.77 34.75 23.06L34.75 23.06L34.32 21.44Q33.13 16.96 31.62 15.29Q30.11 13.61 27.46 13.61L27.46 13.61Q23.52 13.61 20.96 18.28Q18.39 22.95 18.39 31.81L18.39 31.81Q18.39 40.94 21.01 45.72Q23.63 50.49 27.73 50.49L27.73 50.49Q29.95 50.49 31.08 49.52Q32.22 48.55 32.22 45.91L32.22 45.91L32.22 34.08Q32.22 32.95 31.86 32.51Q31.51 32.08 30.38 31.97L30.38 31.97L28.27 31.76Q27.57 31.70 27.57 31.11L27.57 31.11Q27.57 30.52 28.38 30.52L28.38 30.52L38.26 30.52Q39.07 30.52 39.07 31.16L39.07 31.16Q39.07 31.65 38.48 31.76L38.48 31.76L37.67 31.86Q36.48 32.03 36.27 32.51Q36.05 33.00 36.05 34.13L36.05 34.13L36.05 48.77Q36.05 49.36 35.73 49.71Q35.40 50.06 34.59 50.49L34.59 50.49Q33.30 51.14 31.62 51.55Q29.95 51.95 27.73 51.95Z" stroke-width="0.8" stroke-linejoin="round"/><g class="mark-drop"><circle class="mark-dot" cx="45.93" cy="47.67" r="4.29"/></g></svg></a>
       <nav class="mono" aria-label="Sections">
         <a href="#profile"><span>01</span>Profile</a>
         <a href="#record"><span>02</span>Record</a>
@@ -1092,6 +1095,24 @@
         { duration: 1.2, ease: EASE, delay: stagger(0.035, { startDelay: 0.15 }) });
       animate('.hero .fade-in', { opacity: [0, 1], y: [18, 0] },
         { duration: 1, ease: EASE, delay: stagger(0.09, { startDelay: 0.75 }) });
+
+      /* 1b — Logo: the G is drawn as an outline, fills in, then the full stop drops in */
+      var markG = document.querySelector('.mark-g');
+      var markDrop = document.querySelector('.mark-drop');
+      if (markG && markDrop) {
+        var len = markG.getTotalLength();
+        markG.style.strokeDasharray = len;
+        markG.style.strokeDashoffset = len;
+        markG.style.strokeWidth = '1.6';
+        markG.style.strokeOpacity = '1';
+        animate(markG, { strokeDashoffset: [len, 0] }, { duration: 1.3, ease: [0.65, 0, 0.35, 1], delay: 0.2 });
+        animate(markG, { fillOpacity: [0, 1] }, { duration: 0.6, ease: 'easeOut', delay: 1.2 })
+          .then(function () {
+            markG.style.strokeDasharray = markG.style.strokeDashoffset = markG.style.strokeWidth = '';
+          });
+        animate(markDrop, { opacity: [0, 1], y: [-26, 0] },
+          { type: 'spring', stiffness: 420, damping: 13, mass: 0.7, delay: 1.45 });
+      }
 
       /* 2 — Hero exit: the two name lines drift apart as you scroll away */
       var hero = document.querySelector('.hero');
