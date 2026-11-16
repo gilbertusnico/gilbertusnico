@@ -269,7 +269,7 @@
     /* Logo intro (Motion): outline draws, fills in, then the dot drops */
     .m .mark-g { fill-opacity: 0; stroke-opacity: 0; }
     .m .mark-drop { opacity: 0; }
-    .bar nav { display: flex; gap: 2rem; }
+    .bar nav { display: flex; gap: 2rem; position: relative; }
     .bar nav a {
       position: relative;
       color: var(--ink-2);
@@ -279,12 +279,12 @@
     .bar nav a span { color: var(--ink-3); margin-right: 6px; transition: color .25s ease; }
     .bar nav a:hover, .bar nav a.active { color: var(--ink); }
     .bar nav a.active span { color: var(--accent); }
-    .bar nav a::after {
-      content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
-      background: currentColor; transform: scaleX(0); transform-origin: right;
-      transition: transform .5s var(--ease);
+    /* One underline that glides between links (follows hover, rests on the active section) */
+    .nav-ink {
+      position: absolute; left: 0; bottom: -2px; height: 1px; width: 0;
+      background: var(--ink); opacity: 0; pointer-events: none;
+      transition: transform .6s var(--ease), width .6s var(--ease), opacity .3s ease, background-color .5s ease;
     }
-    .bar nav a:hover::after, .bar nav a.active::after { transform: scaleX(1); transform-origin: left; }
     .bar-right { display: flex; align-items: center; gap: 1.25rem; }
     .status { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
     .pip {
@@ -555,6 +555,8 @@
     }
     .edu .deg { grid-column: 9 / -1; color: var(--ink-2); }
     .edu .deg b { display: block; font-weight: 500; color: var(--ink); font-size: 1.05rem; margin-bottom: .25rem; }
+    .m .edu { border-top-color: transparent; }          /* the rule is drawn in instead */
+    .m .edu .period, .m .edu h3, .m .edu .deg { opacity: 0; }
 
     /* ---------- Contact ---------- */
     .contact { padding: clamp(6rem, 14vw, 12rem) 0 clamp(3rem, 6vw, 5rem); border-top: 1px solid var(--rule); }
@@ -617,7 +619,9 @@
 
     /* ---------- Motion (motion.dev) ---------- */
     .ch, .wi { display: inline-block; will-change: transform; }
-    .wm { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+    .wm { display: inline-block; overflow: hidden; vertical-align: top; padding: .08em .14em .22em; margin: -.08em -.14em -.22em; }
+    /* Masks only matter while text rises; once settled nothing may be clipped */
+    .wm.settled, .hero h1.settled .line { overflow: visible; }
     .m .fade-in { animation: none; opacity: 0; transform: none; }
     .m .hero h1 .line > span { animation: none; transform: none; }
     .m .hero h1 .ch { transform: translateY(110%); }
@@ -706,6 +710,7 @@
         <a href="#record"><span>02</span>Record</a>
         <a href="#education"><span>03</span>Education</a>
         <a href="#contact"><span>04</span>Contact</a>
+        <i class="nav-ink" aria-hidden="true"></i>
       </nav>
       <div class="bar-right">
         <span class="status mono"><i class="pip"></i><span>Open to opportunities</span></span>
@@ -926,7 +931,7 @@
         <span class="sec-num mono rv">03 — Education</span>
         <h2 class="sec-title">Trained in <em>technology</em> first.</h2>
       </div>
-      <div class="edu rv">
+      <div class="edu rule-draw">
         <span class="period mono"><time datetime="2011-10">Oct 2011</time> — <time datetime="2015-06">Jun 2015</time></span>
         <h3>President University</h3>
         <p class="deg"><b>Bachelor of Science in Information Technology</b><span class="mono">Major · IT</span></p>
@@ -1018,6 +1023,22 @@
       var bar = document.getElementById('bar');
       var progress = document.getElementById('progress');
       var links = document.querySelectorAll('.bar nav a');
+      var nav = document.querySelector('.bar nav');
+      var ink = nav.querySelector('.nav-ink');
+      var activeLink = null, hovering = false;
+      function placeInk(a) {
+        if (!a || !a.offsetWidth) { ink.style.opacity = '0'; return; }
+        var jump = ink.style.opacity !== '1';          // first appearance: no slide in from the left edge
+        if (jump) ink.style.transition = 'none';
+        ink.style.width = a.offsetWidth + 'px';
+        ink.style.transform = 'translateX(' + a.offsetLeft + 'px)';
+        if (jump) { ink.getBoundingClientRect(); ink.style.transition = ''; }
+        ink.style.opacity = '1';
+      }
+      links.forEach(function (a) {
+        a.addEventListener('mouseenter', function () { hovering = true; placeInk(a); });
+      });
+      nav.addEventListener('mouseleave', function () { hovering = false; placeInk(activeLink); });
       var sections = ['profile', 'record', 'education', 'contact'].map(function (id) { return document.getElementById(id); });
       var ticking = false;
 
@@ -1037,16 +1058,24 @@
         // Scrollspy
         var current = '';
         sections.forEach(function (s) { if (s.getBoundingClientRect().top <= vh * 0.35) current = s.id; });
-        links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+        var next = null;
+        links.forEach(function (a) {
+          var on = a.getAttribute('href') === '#' + current;
+          a.classList.toggle('active', on);
+          if (on) next = a;
+        });
+        if (next !== activeLink) { activeLink = next; if (!hovering) placeInk(activeLink); }
         ticking = false;
       }
       window.addEventListener('scroll', function () {
         if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
       }, { passive: true });
-      window.addEventListener('resize', onScroll);
+      window.addEventListener('resize', function () { onScroll(); placeInk(hovering ? null : activeLink); });
       onScroll();
+      if (document.fonts) document.fonts.ready.then(function () { if (!hovering) placeInk(activeLink); });
 
       if (motionOn) choreograph(M);
+      else setTimeout(function () { document.querySelector('.hero h1').classList.add('settled'); }, reduce ? 0 : 1600);
     })();
 
     /* =========================================================
@@ -1092,7 +1121,8 @@
         nameChars = nameChars.concat(split(l, 'chars'));
       });
       animate(nameChars, { y: ['110%', '0%'], rotate: [6, 0] },
-        { duration: 1.2, ease: EASE, delay: stagger(0.035, { startDelay: 0.15 }) });
+        { duration: 1.2, ease: EASE, delay: stagger(0.035, { startDelay: 0.15 }) })
+        .then(function () { document.querySelector('.hero h1').classList.add('settled'); });
       animate('.hero .fade-in', { opacity: [0, 1], y: [18, 0] },
         { duration: 1, ease: EASE, delay: stagger(0.09, { startDelay: 0.75 }) });
 
@@ -1128,7 +1158,8 @@
       document.querySelectorAll('.sec-title, .contact-line').forEach(function (t) {
         var words = split(t, 'words');
         inView(t, function () {
-          animate(words, { y: ['110%', '0%'] }, { duration: 1.1, ease: EASE, delay: stagger(0.06) });
+          animate(words, { y: ['110%', '0%'] }, { duration: 1.1, ease: EASE, delay: stagger(0.06) })
+            .then(function () { words.forEach(function (w) { w.parentNode.classList.add('settled'); }); });
         }, { amount: 0.4 });
       });
 
@@ -1156,6 +1187,16 @@
         animate(el.querySelectorAll('.tag'), { opacity: [0, 1], scale: [0.85, 1] },
           { type: 'spring', stiffness: 380, damping: 22, delay: stagger(0.05) });
       });
+
+      /* 7b — Education: the top rule draws across, then period, school and degree
+         arrive in reading order; the school name settles its tracking as it lands */
+      inView('.edu', function (el) {
+        animate(el.querySelector('.period'), { opacity: [0, 1], y: [16, 0] }, { duration: 0.8, ease: EASE, delay: 0.45 });
+        animate(el.querySelector('h3'), { opacity: [0, 1], y: [26, 0], letterSpacing: ['0.02em', '-0.03em'] },
+          { duration: 1.3, ease: EASE, delay: 0.55 })
+          .then(function () { el.querySelector('h3').style.letterSpacing = ''; });
+        animate(el.querySelector('.deg'), { opacity: [0, 1], y: [16, 0] }, { duration: 0.8, ease: EASE, delay: 0.8 });
+      }, { amount: 0.3 });
 
       /* 7 — Ledger entries: each row writes itself in, left to right */
       document.querySelectorAll('.entry').forEach(function (entry) {
